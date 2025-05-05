@@ -27,6 +27,8 @@ local location = { ---@type table<string, GarageData>
         type = 'depot',
         category = 'basic',
     },
+
+    ---@JobGarage_Example
     -- ['Garko3t'] = {
     --     coords = vec(0,0,0),
     --     distance = 5.0,
