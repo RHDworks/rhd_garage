@@ -6,7 +6,7 @@ local client = {
 local qbox = exports.qbx_core
 local playerData = QBX.PlayerData
 
-local vehicleHashes = qbox:GetVehicleHash()
+local vehicleHashes = qbox:GetVehiclesByHash()
 
 ---@param modelHash number
 ---@return string? VehicleName

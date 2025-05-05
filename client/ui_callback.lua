@@ -153,7 +153,7 @@ RegisterNUICallback('updateGarageName', function (data, cb)
     
     if vehicleData and vehicleData.currentGarage then
         success = lib.callback.await(
-            'rhd_garage:server:updateGarageName', false, vehicleData.plate, data.newName, vehicleData.name
+            'rhd_garage:server:updateGarageName', false, vehicleData.plate, data.garage, vehicleData.currentGarage
         )
     
         if not success then
