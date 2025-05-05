@@ -54,6 +54,7 @@ RegisterNetEvent('rhd_garage:server:setVehicleOut', function(netId, garage)
 
     local plate = GetVehicleNumberPlateText(vehicle):trim()
 
+    utils.giveKeys(source, plate)
     server.setVehicleState(plate, 0, garage)
 end)
 
