@@ -19,6 +19,7 @@
 ---@field category? garageCategory
 ---@field spawn_points? vector4[]
 ---@field groups? groupData
+---@field label? string
 
 ---@class VehicleData
 ---@field id number|string
