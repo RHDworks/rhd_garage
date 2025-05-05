@@ -1,8 +1,10 @@
 local garage = require 'config.garage'
 local location = require 'config.location'
 
-local function getSpawnPoints(garage)
-    local garageData = location[garage]
+---@param garageName string
+---@return vector4? SpawnPoint
+local function getSpawnPoints(garageName)
+    local garageData = location[garageName]
     if not garageData then
         return
     end
@@ -24,9 +26,11 @@ local function getSpawnPoints(garage)
         return freeLoc
     end
 
-    return vec(coords.xyz, heading)
+    return vec(coords.x, coords.y, coords.z, heading)
 end
 
+---@param vehicleId number|string
+---@param isDepot boolean
 local function spawnVehicle(vehicleId, isDepot)
     local vehicleData = vehicle_cache:getVehicleData(vehicleId)
 
@@ -64,7 +68,7 @@ local function spawnVehicle(vehicleId, isDepot)
 
     Wait(100)
     utils.setFuel(vehicle, props.fuelLevel)
-
+    
     local netId = NetworkGetNetworkIdFromEntity(vehicle)
     TriggerServerEvent('rhd_garage:server:setVehicleOut', netId, vehicleData.currentGarage)
 end
