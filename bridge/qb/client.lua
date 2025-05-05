@@ -7,6 +7,17 @@ local client = {
 
 local playerData = QBCore.Functions.GetPlayerData() or {}
 
+---@param modelHash number
+---@return string? VehicleName
+function client.getVehicleName(modelHash)
+    local vehicleData = QBCore.Shared.VehicleHashes[modelHash]
+    
+    if not vehicleData then
+        return
+    end
+
+    return ('%s %s'):format(vehicleData.brand, vehicleData.name)
+end
 
 RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
     playerData = val

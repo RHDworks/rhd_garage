@@ -3,7 +3,22 @@ local client = {
     playerGang = {}
 }
 
+local qbox = exports.qbx_core
 local playerData = QBX.PlayerData
+
+local vehicleHashes = qbox:GetVehicleHash()
+
+---@param modelHash number
+---@return string? VehicleName
+function client.getVehicleName(modelHash)
+    local vehicleData = vehicleHashes[modelHash]
+
+    if not vehicleData then
+        return
+    end
+
+    return ('%s %s'):format(vehicleData.brand, vehicleData.name)
+end
 
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(job)
     client.playerJob = {
