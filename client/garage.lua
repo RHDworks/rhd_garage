@@ -9,8 +9,13 @@ AddTextEntry('garageHelpText', 'Press ~INPUT_PICKUP~ to access this garage')
 ---@param garageType garageType
 local function openMenu(garageName, garageType)
     local vehicleData = {}
+    local garageData = location[garageName]
 
-    local garageClass = garage.category_class[location[garageName].category]
+    if not garageData then
+        return
+    end
+
+    local garageClass = garage.category_class[garageData.category]
     local vehicleList = lib.callback.await('rhd_garage:server:getVehicles', 500, garageName)
     
     if vehicleList and #vehicleList > 0 then
@@ -39,14 +44,16 @@ local function openMenu(garageName, garageType)
                     badges[('Invoice $(%s)'):format(garage.insurance_price[vehicle_class])] = 'yellow'
                 end
 
+                local vehicleName = vehicle.custom_name or core.getVehicleName(vehicleModel) or utils.getVehicleName(vehicleModel)
+
                 local vehicle_data = {
                     id = vehicle.id,
-                    name = vehicle.custom_name or utils.getVehicleName(vehicleModel),
+                    name = vehicleName,
                     plate = vehicle.plate:trim(),
                     icon = utils.getVehicleIcon(vehicle_class),
                     vehicle_status = {
-                        body = math.floor((vehicle.props.bodyHealth or 1000)),
-                        engine = math.floor((vehicle.props.engineHealth or 1000)),
+                        body = math.floor((vehicle.props.bodyHealth or 1000) / 10),
+                        engine = math.floor((vehicle.props.engineHealth or 1000) / 10),
                         fuel = math.floor(vehicle.props.fuelLevel)
                     },
                     badges = badges,
@@ -69,7 +76,7 @@ local function openMenu(garageName, garageType)
             visible = true,
             vehicles = vehicleData,
             garage = {
-                label = garageName,
+                label = garageData.label or garageName,
                 extra_buttons = {
                     change_veh_name = garage.change_veh_name,
                     change_veh_garage = garage.change_veh_garage
@@ -88,8 +95,11 @@ CreateThread(function()
             hasAccess = true
         })
 
-        local blipData = garage.blip_data[data.type] or garage.blip_data[data.category]
-        utils.createGarageBlip(data.coords.xyz, label, blipData, garage.blip_category)
+        if data.blip then
+            local blipLabel = data.label or label
+            local blipData = garage.blip_data[data.type] or garage.blip_data[data.category]
+            utils.createGarageBlip(data.coords.xyz, blipLabel, blipData, garage.blip_category)
+        end
 
         function garage_points:onEnter()
             if not data.groups then return end
@@ -162,7 +172,9 @@ CreateThread(function()
                     return
                 end
 
-                openMenu(label, data.type)
+                if not cache.vehicle then
+                    openMenu(label, data.type)
+                end
             end
         end
     end
