@@ -13,6 +13,25 @@ function utils.loopHash(t, fn)
     return false
 end
 
+---@param ... any
+function utils.notify(...)
+    local args = {...}
+
+    if lib.context == 'server' then
+        return lib.notify(args[1], {
+            description = args[2],
+            type = args[3],
+            duration = args[4] or 8000
+        })
+    end
+
+    return lib.notify({
+        description = args[1],
+        type = args[2],
+        duration = args[3] or 8000
+    })
+end
+
 ---@param str string
 function string.trim(str)
     local trimmed = str:gsub('^%s*(.-)%s*$', '%1')
@@ -21,10 +40,14 @@ end
 
 if lib.context == 'client' then
 
+    ---@param vehicle integer
+    ---@param level number
     function utils.setFuel(vehicle, level)
         Entity(vehicle).state:set('fuel', level, true)
     end
 
+    ---@param vehicle integer
+    ---@return number FuelLevel
     function utils.getFuel(vehicle)
         local fuelLevel = Entity(vehicle).state.fuel
         return fuelLevel or 100
@@ -128,7 +151,7 @@ if lib.context == 'client' then
         local dist = #(playerCoords - vector)
 
         if dist > 424 then -- Onesync infinity Range (https://docs.fivem.net/docs/scripting-reference/onesync/)
-        return
+            return
         end
 
         local promise = not cb and promise.new()
@@ -229,7 +252,16 @@ if lib.context == 'client' then
         end
         return true
     end
+else
+    ---@param source number
+    ---@param plate string
+    function utils.giveKeys(source, plate)
+        ---@qbx_vehiclekeys
+        exports.qbx_vehiclekeys:GiveKeys(source, plate)
 
+        ---@qb-vehiclekeys
+        -- exports['qb-vehiclekeys']:GiveKeys(source, plate)
+    end
 end
 
 _ENV.utils = utils
